@@ -1,10 +1,11 @@
-package town.kibty.enderrelay.block;
+package com.aeonhero.enderrelay.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import town.kibty.enderrelay.EnderRelay;
+import com.aeonhero.enderrelay.EnderRelay;
+import com.aeonhero.enderrelay.block.ModBlockEntities;
 
 public class EnderRelayBlockEntity extends BlockEntity {
     public static final String DIMENSION_ID_KEY = "RelayDimensionId";
@@ -14,7 +15,7 @@ public class EnderRelayBlockEntity extends BlockEntity {
     private Integer y;
     private Integer z;
     public EnderRelayBlockEntity(BlockPos pos, BlockState state) {
-        super(EnderRelay.ENDER_RELAY_BLOCK_ENTITY, pos, state);
+        super(ModBlockEntities.ENDER_RELAY_BLOCK_ENTITY.get(), pos, state);
     }
 
     @Override

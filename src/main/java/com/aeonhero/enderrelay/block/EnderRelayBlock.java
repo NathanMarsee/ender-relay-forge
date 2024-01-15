@@ -1,4 +1,4 @@
-package town.kibty.enderrelay.block;
+package com.aeonhero.enderrelay.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,6 +12,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -98,7 +99,7 @@ public class EnderRelayBlock extends Block implements EntityBlock {
     // Copied from RespawnAnchorBlock for exact same functionality
     private void explode(Level level, final BlockPos pos) {
         level.removeBlock(pos, false);
-        boolean bl = Direction.Plane.HORIZONTAL.stream().map(pos::relative).anyMatch(blockPos -> RespawnAnchorBlock.isWaterThatWouldFlow(blockPos, level));
+        boolean bl = Direction.Plane.HORIZONTAL.stream().map(pos::relative).anyMatch(blockPos -> myIsWaterThatWouldFlow(blockPos, level));
         final boolean bl2 = bl || level.getFluidState(pos.above()).is(FluidTags.WATER);
         ExplosionDamageCalculator explosionDamageCalculator = new ExplosionDamageCalculator(){
 
@@ -110,14 +111,16 @@ public class EnderRelayBlock extends Block implements EntityBlock {
                 return super.getBlockExplosionResistance(explosion, blockGetter, blockPos, blockState, fluidState);
             }
         };
-        Vec3 vec3 = pos.getCenter();
+        Vec3 vec3 = Vec3.atCenterOf(pos);
         level.explode(
                 null,
-                level.damageSources().badRespawnPointExplosion(vec3),
+                DamageSource.badRespawnPointExplosion(),
                 explosionDamageCalculator,
-                vec3,
+                vec3.x,
+                vec3.y,
+                vec3.z,
                 5.0f,
-                true, Level.ExplosionInteraction.BLOCK);
+                true, Explosion.BlockInteraction.BREAK);
     }
 
     public static void light(@Nullable Entity entity, Level level, BlockPos blockPos, BlockState blockState) {
@@ -127,19 +130,43 @@ public class EnderRelayBlock extends Block implements EntityBlock {
         level.playSound(null, blockPos, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.BLOCKS, 1.0f, 1.0f); // TODO: Better sound effects (if you want to do something and can do some sound effect stuff, dm me)
     }
 
+    private static boolean myIsWaterThatWouldFlow(BlockPos p_55888_, Level p_55889_) {
+        FluidState fluidstate = p_55889_.getFluidState(p_55888_);
+        if (!fluidstate.is(FluidTags.WATER)) {
+            return false;
+        } else if (fluidstate.isSource()) {
+            return true;
+        } else {
+            float f = (float)fluidstate.getAmount();
+            if (f < 2.0F) {
+                return false;
+            } else {
+                FluidState fluidstate1 = p_55889_.getFluidState(p_55888_.below());
+                return !fluidstate1.is(FluidTags.WATER);
+            }
+        }
+    }
+
     @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState blockState, Player player) {
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState blockState, Player player) {
         ItemStack itemInMainHand = player.getItemInHand(InteractionHand.MAIN_HAND);
         if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, itemInMainHand) == 0) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
 
-            if (!(blockEntity instanceof EnderRelayBlockEntity enderRelayEntity)) return super.playerWillDestroy(level, pos, blockState, player);if(enderRelayEntity.hasNoLocation()) return super.playerWillDestroy(level, pos, blockState, player);
-
-            ItemStack compass = new ItemStack(Items.COMPASS, 1);
-            ((CompassItem) Items.COMPASS).addLodestoneTags(level.dimension(), new BlockPos(enderRelayEntity.getX(), enderRelayEntity.getY(), enderRelayEntity.getZ()), compass.getOrCreateTag());
-            popResource(level, pos, compass);
+            if (!(blockEntity instanceof EnderRelayBlockEntity enderRelayEntity))
+                super.playerWillDestroy(level, pos, blockState, player);
+            else if(enderRelayEntity.hasNoLocation())
+                super.playerWillDestroy(level, pos, blockState, player);
+            else
+            {
+                ItemStack compass = new ItemStack(Items.COMPASS, 1);
+                //TO FIX:
+                //((CompassItem) Items.COMPASS).addLodestoneTags(level.dimension(), new BlockPos(enderRelayEntity.getX(), enderRelayEntity.getY(), enderRelayEntity.getZ()), compass.getOrCreateTag());
+                popResource(level, pos, compass);
+                super.playerWillDestroy(level, pos, blockState, player);
+            }
         }
-        return super.playerWillDestroy(level, pos, blockState, player);
+        else super.playerWillDestroy(level, pos, blockState, player);
     }
 
     public static void sendToLocation(ServerPlayer player, ServerLevel level, int x, int y, int z) {
