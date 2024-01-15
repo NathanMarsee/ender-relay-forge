@@ -1,9 +1,14 @@
 package com.aeonhero.enderrelay.block;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -41,10 +46,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.util.Optional;
 
 public class EnderRelayBlock extends Block implements EntityBlock {
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final BooleanProperty CHARGED = BooleanProperty.create("charged");
 
     public EnderRelayBlock(Properties properties) {
@@ -60,7 +67,7 @@ public class EnderRelayBlock extends Block implements EntityBlock {
     @Override
     public @NotNull InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
         ItemStack itemInHand = player.getItemInHand(interactionHand);
-        if (itemInHand.is(Items.END_CRYSTAL) && !blockState.getValue(CHARGED)) {
+        if (itemInHand.is(Items.ENDER_PEARL) && !blockState.getValue(CHARGED)) {
             light(player, level, blockPos, blockState);
             if (!player.getAbilities().instabuild) {
                 itemInHand.shrink(1);
@@ -161,12 +168,20 @@ public class EnderRelayBlock extends Block implements EntityBlock {
             {
                 ItemStack compass = new ItemStack(Items.COMPASS, 1);
                 //TO FIX:
-                //((CompassItem) Items.COMPASS).addLodestoneTags(level.dimension(), new BlockPos(enderRelayEntity.getX(), enderRelayEntity.getY(), enderRelayEntity.getZ()), compass.getOrCreateTag());
+                myAddLodestoneTags(level.dimension(), new BlockPos(enderRelayEntity.getX(), enderRelayEntity.getY(), enderRelayEntity.getZ()), compass.getOrCreateTag());
                 popResource(level, pos, compass);
                 super.playerWillDestroy(level, pos, blockState, player);
             }
         }
         else super.playerWillDestroy(level, pos, blockState, player);
+    }
+
+    private void myAddLodestoneTags(ResourceKey<Level> p_40733_, BlockPos p_40734_, CompoundTag p_40735_) {
+        p_40735_.put("LodestonePos", NbtUtils.writeBlockPos(p_40734_));
+        Level.RESOURCE_KEY_CODEC.encodeStart(NbtOps.INSTANCE, p_40733_).resultOrPartial(LOGGER::error).ifPresent((p_40731_) -> {
+            p_40735_.put("LodestoneDimension", p_40731_);
+        });
+        p_40735_.putBoolean("LodestoneTracked", true);
     }
 
     public static void sendToLocation(ServerPlayer player, ServerLevel level, int x, int y, int z) {

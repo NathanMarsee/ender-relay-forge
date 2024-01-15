@@ -70,7 +70,7 @@ public class EnderRelay {
 
         MinecraftForge.EVENT_BUS.register(this);
 
-        DispenserBlock.registerBehavior(Items.END_CRYSTAL, new OptionalDispenseItemBehavior(){
+        DispenserBlock.registerBehavior(Items.ENDER_PEARL, new OptionalDispenseItemBehavior(){
 
             //@Override
             public @NotNull ItemStack execute(BlockSource blockSource, ItemStack itemStack) {

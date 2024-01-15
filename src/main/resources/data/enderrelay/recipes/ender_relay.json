@@ -1,4 +1,23 @@
 {
-  "type": "ender_relay_recipe",
-  "category": "misc"
+  "type": "enderrelay:ender_relay_recipe",
+  "pattern": [
+    "#P#",
+    "PEP",
+    "#P#"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:obsidian"
+    },
+    "P": {
+      "item": "minecraft:popped_chorus_fruit"
+    },
+    "E": {
+      "item": "minecraft:compass"
+    }
+  },
+  "result": {
+    "item": "enderrelay:ender_relay",
+    "count": 1
+  }
 }

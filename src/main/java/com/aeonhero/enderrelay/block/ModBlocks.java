@@ -21,7 +21,8 @@ public class ModBlocks
             DeferredRegister.create(ForgeRegistries.BLOCKS, EnderRelay.MODID);
 
     public static final RegistryObject<Block> ENDER_RELAY_BLOCK = registerBlock("ender_relay", () -> new EnderRelayBlock(BlockBehaviour.Properties.of(Material.STONE)
-            .strength(50.0f, 1200.0f).requiresCorrectToolForDrops()), CreativeModeTab.TAB_TRANSPORTATION);
+            .strength(50.0f, 1200.0f).requiresCorrectToolForDrops()), CreativeModeTab.TAB_DECORATIONS);
+
 /*public static final BlockEntityType<EnderRelayBlockEntity> ENDER_RELAY_BLOCK_ENTITY = Registry.register(
             BuiltInRegistries.BLOCK_ENTITY_TYPE,
             new ResourceLocation(MOD_ID, "ender_relay"),

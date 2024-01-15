@@ -4,6 +4,7 @@ import com.aeonhero.enderrelay.block.ModBlockEntities;
 import com.aeonhero.enderrelay.item.ModItems;
 import com.google.gson.JsonObject;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -18,7 +19,7 @@ import com.aeonhero.enderrelay.EnderRelay;
 import com.aeonhero.enderrelay.block.EnderRelayBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-public class EnderRelayRecipe extends CustomRecipe
+public class EnderRelayRecipe extends ShapedRecipe
 {
     public static final Item[][] RECIPE = new Item[][] {
             {Items.OBSIDIAN, Items.POPPED_CHORUS_FRUIT, Items.OBSIDIAN},
@@ -26,13 +27,29 @@ public class EnderRelayRecipe extends CustomRecipe
             {Items.OBSIDIAN, Items.POPPED_CHORUS_FRUIT, Items.OBSIDIAN}
     };
 
+    public static final Ingredient[] COST = new Ingredient[] {
+            Ingredient.of(Items.OBSIDIAN), Ingredient.of(Items.POPPED_CHORUS_FRUIT), Ingredient.of(Items.OBSIDIAN),
+            Ingredient.of(Items.POPPED_CHORUS_FRUIT), Ingredient.of(Items.COMPASS), Ingredient.of(Items.POPPED_CHORUS_FRUIT),
+            Ingredient.of(Items.OBSIDIAN), Ingredient.of(Items.POPPED_CHORUS_FRUIT), Ingredient.of(Items.OBSIDIAN)};
+
+    /*private final Ingredient pcf1 = Ingredient.of(Items.POPPED_CHORUS_FRUIT);
+    private final ItemStack pcf2 = new ItemStack(Items.POPPED_CHORUS_FRUIT, 1);
+    private final ItemStack pcf3 = new ItemStack(Items.POPPED_CHORUS_FRUIT, 1);
+    private final ItemStack pcf4 = new ItemStack(Items.POPPED_CHORUS_FRUIT, 1);
+    private final ItemStack obs1 = new ItemStack(Items.OBSIDIAN, 1);
+    private final ItemStack obs2 = new ItemStack(Items.OBSIDIAN, 1);
+    private final ItemStack obs3 = new ItemStack(Items.OBSIDIAN, 1);
+    private final ItemStack obs4 = new ItemStack(Items.OBSIDIAN, 1);
+    private final ItemStack comp = new ItemStack(Items.COMPASS, 1);*/
+
+
     /*public static final SimpleRecipeSerializer<EnderRelayRecipe> SERIALIZER = new SimpleRecipeSerializer<EnderRelayRecipe>(EnderRelayRecipe::new);
     public EnderRelayRecipe(CraftingBookCategory craftingBookCategory) {
         super(craftingBookCategory);
     }*/
     public static final SimpleRecipeSerializer<EnderRelayRecipe> SERIALIZER = new SimpleRecipeSerializer<>(EnderRelayRecipe::new);
     public EnderRelayRecipe(ResourceLocation id) {
-        super(id);
+        super(id, "misc", 3, 3, NonNullList.of(Ingredient.of(Items.AIR), COST), new ItemStack(ModItems.ENDER_RELAY_ITEM.get(), 1));
     }
 
     @Override
