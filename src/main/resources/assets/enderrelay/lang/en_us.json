@@ -2,5 +2,8 @@
   "enderrelay.unknown_destination": "Unknown destination",
   "enderrelay.obstructed_destination": "The ender relay you are trying to use has its destination obstructed.",
   "enderrelay.no_lodestone": "No lodestone block found at the destination.",
-  "block.enderrelay.ender_relay": "Ender Relay"
+  "block.enderrelay.ender_relay": "Ender Relay",
+  "item.enderrelay.ender_relay": "Ender Relay",
+  "enderrelay.ender_relay": "Ender Relay",
+  "enderrelay:ender_relay": "Ender Relay"
 }
